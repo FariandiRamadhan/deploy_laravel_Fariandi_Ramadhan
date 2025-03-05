@@ -1,0 +1,45 @@
+services:
+  
+  mysql_db:
+    container_name: webinar_db
+    image: mariadb
+    environment:
+      MYSQL_DATABASE: perpusku_gc
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - php_docker_webinar
+  
+  phpmyadmin:
+    container_name: pma_webinar
+    image: phpmyadmin:latest
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+    depends_on:
+      - mysql_db
+    networks:
+      - php_docker_webinar
+
+  php-docker:
+    container_name: php_webinar
+    build: 
+      context: ./perpus
+    ports:
+      - 8000:8000
+    networks:
+      - php_docker_webinar
+    volumes:
+      - /var/www/html/vendor 
+    depends_on:
+      - mysql_db
+    
+networks:
+  php_docker_webinar:
+    driver: bridge
